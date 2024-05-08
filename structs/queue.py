@@ -1,5 +1,17 @@
 """
 Service queue data structure
+
+This module contains the IoTQueue class, which represents a queue data structure
+used in the IoT system.
+
+The IoTQueue class has the following methods:
+    __init__: Initialize the IoTQueue with the given maximum size.
+    current_state: Return the current state of the queue.
+    space_available: Return the available space in the queue.
+    state_prime: Return the prime state of the queue.
+    allocate_space: Allocate space for the requests in the queue.
+    enqueue_request: Enqueue a request in the queue.
+    dequeue_request: Dequeue a request from the queue.
 """
 
 from collections import deque
