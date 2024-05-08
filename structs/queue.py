@@ -6,7 +6,8 @@ from collections import deque
 
 
 class IoTQueue:
-    """A class used to represent an IoT Queue.
+    """
+    A class used to represent an IoT Queue.
 
     Attributes:
         queue (deque): a deque object with a maximum length.
