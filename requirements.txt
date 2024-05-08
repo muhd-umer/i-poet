@@ -1,0 +1,12 @@
+numpy
+scipy
+numba
+matplotlib
+colorama
+termcolor
+pandas
+torch
+torchvision
+torchaudio
+gymnasium
+torchrl
