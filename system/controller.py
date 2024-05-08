@@ -52,11 +52,11 @@ class Controller:
             str: The next state.
         """
         for state in self.state_machine:
-            sp_commands = state["state"]["command"]
-            sp_state = state["state"]["power_mode"]
+            cnt_commands = state["state"]["command"]
+            cnt_state = state["state"]["power_mode"]
 
-            if command == sp_commands:
-                return "sleep" if sp_state == "active" else "active"
+            if command == cnt_commands:
+                return "sleep" if cnt_state == "active" else "active"
 
     def set_power_mode(self, command):
         """Set the power mode based on the given command.
