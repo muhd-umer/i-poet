@@ -1,5 +1,14 @@
 """
 Controller module for power optimization system for IoT devices
+
+This module contains the Controller class that manages the power mode of a
+device; it is used to set the power mode based on the given command.
+
+The Controller class has the following methods:
+    __init__: Initialize the Controller with the given state machine and transfer rate.
+    init_states: Initialize the states from the state machine.
+    observe_next: Return the next state based on the given command.
+    set_power_mode: Set the power mode based on the given command.
 """
 
 
