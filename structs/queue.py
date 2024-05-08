@@ -8,7 +8,7 @@ The IoTQueue class has the following methods:
     __init__: Initialize the IoTQueue with the given maximum size.
     current_state: Return the current state of the queue.
     space_available: Return the available space in the queue.
-    state_prime: Return the prime state of the queue.
+    state_prime: Return the state' of the queue.
     allocate_space: Allocate space for the requests in the queue.
     enqueue_request: Enqueue a request in the queue.
     dequeue_request: Dequeue a request from the queue.
@@ -51,7 +51,7 @@ class IoTQueue:
         return self.queue.maxlen - len(self.queue)
 
     def state_prime(self):
-        """Returns the prime state of the queue."""
+        """Returns the state' of the queue."""
         if self.is_deque_ready and len(self.queue) > 0:
             return len(self.queue) - 1
         elif not self.is_deque_ready and self.space_available > 0:
