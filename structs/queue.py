@@ -28,14 +28,16 @@ class IoTQueue:
         is_deque_ready (bool): a flag indicating if the deque is ready.
     """
 
-    def __init__(self, max_size):
+    def __init__(self, size):
         """Constructs all the necessary attributes for the IoTQueue object.
 
         Args:
-            max_size (int): The maximum size of the queue.
+            size (int): The maximum size of the queue.
         """
 
-        self.queue = deque(maxlen=max_size)
+        self.queue = deque(maxlen=size)
+        # variable to help compute state size
+        self.states = list(range(size))
         self.requests = 0
         self.previous_state = self.current_state
         self.is_deque_ready = False
