@@ -1,6 +1,7 @@
 numpy
 scipy
 numba
+python-box
 matplotlib
 colorama
 termcolor
