@@ -19,18 +19,18 @@ class Controller:
     command.
     """
 
-    def __init__(self, state_machine, transfer_rate):
+    def __init__(self, state_machine):
         """Initialize the Controller with the given state machine and transfer rate.
 
         Args:
             state_machine (list): State machine of the device.
-            transfer_rate (float): Transfer rate of the communication module.
         """
         self.state_machine = state_machine
-        self.transfer_rate = transfer_rate
         self.current_state = self.previous_state = self.next_state = (
             self.current_action
         ) = self.previous_action = None
+        # variable to help compute state size
+        self.states = [st["state"]["power_mode"] for st in state_machine]
         self.init_states()
 
     def init_states(self):
