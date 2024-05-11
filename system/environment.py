@@ -30,6 +30,7 @@ class SystemEnvironment(gym.Env):
         self.transfer_rate = cfg.transfer_rate
         self.queue_size = cfg.queue_size
         self.valid_reqs = cfg.valid_reqs
+        self.delta = cfg.delta
 
         self._init_system()
         self.inter_arrivals = cfg.inter_arrivals
@@ -80,7 +81,7 @@ class SystemEnvironment(gym.Env):
             "queue": self.queue.current_state,
         }
 
-    def cost_function(self, virtual_state=False, delta=0.0):
+    def cost_function(self, delta=1.0):
         """
         Cost function for the environment
 
@@ -95,9 +96,6 @@ class SystemEnvironment(gym.Env):
         cnt_sm = self.controller.state_machine
         cnt_state = self.controller.previous_state
         queue_state = self.queue.previous_state
-        if virtual_state:
-            cnt_state = self.controller.current_state
-            queue_state = self.queue.current_state
 
         if cnt_state == "transient":
             for st in cnt_sm:
@@ -128,6 +126,10 @@ class SystemEnvironment(gym.Env):
         """
         Take a step in the environment
         """
+        action = self.ACTION_MAP[action]
+        self.controller.set_power_mode(action)
+        self.time += 1
+
         if self.time in self.inter_arrivals:
             reqs = self.node.generate_requests(np.random.randint(1, 8))
             self.queue.allocate_space(reqs)
@@ -141,6 +143,13 @@ class SystemEnvironment(gym.Env):
             self.queue.enqueue_request()
 
         self.node.determine_state()
+
+        if self.time >= cfg.num_steps:
+            done = True
+
+        reward = -1 * self.cost_function(delta=self.delta)  # minimize the cost
+
+        return self._get_observation(), reward, done, False, self._get_info()
 
     def reset(self):
         """
