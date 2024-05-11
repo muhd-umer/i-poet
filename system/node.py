@@ -22,12 +22,13 @@ class IoTNode:
         Args:
             states (list): List of states.
             alpha (float): Alpha value for EMA calculation.
-            transfer_rate (float): Transfer rate of the node.
+            transfer_rate (float): Transfer rate of the node in Mbps.
         """
         self.states = states
         self.alpha = alpha
         self.ema = 0
         self.transfer_rate = transfer_rate
+        self.requests = 0
         self.current_state = states[0]
         self.previous_state = self.current_state
 
@@ -49,10 +50,12 @@ class IoTNode:
 
         Args:
             req_size (int): Size of the request in MB.
-        """
 
+        Returns:
+            int: Number of requests.
+        """
         by2bi = 8  # 1 byte = 8 bits
-        return req_size * by2bi / self.transfer_rate
+        return int(req_size * by2bi / self.transfer_rate)
 
     def determine_state(self):
         """Determines the current state based on the EMA of the requests."""
