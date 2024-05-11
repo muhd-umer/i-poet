@@ -55,12 +55,14 @@ def evaluate_agent(env, model, num_episodes=10):
     all_transitions = []
     all_queue_requests = []
     all_power = []
-    for _ in range(num_episodes):
+    all_rewards = []  # Store rewards for each episode
+    for ep in range(num_episodes):
         obs, _ = env.reset()
         done = False
         transitions = []
         queue_requests = []
         power = []
+        rewards = []
         while not done:
             action, _ = model.predict(obs, deterministic=True)
             # Extract the integer action from the NumPy array
@@ -69,12 +71,69 @@ def evaluate_agent(env, model, num_episodes=10):
             transitions.append(env.controller.current_action)
             queue_requests.append(env.queue.current_state)
             power.append(-reward)  # Reward is negative cost
+            rewards.append(reward)
+
+            # Enhanced Logging (add this for debugging):
+            print(
+                f"Episode: {ep}, Step: {env.time}, Action: {action}, "
+                f"Reward: {reward}, Queue: {env.queue.current_state}, "
+                f"Controller: {env.controller.current_state}"
+            )
 
         all_transitions.append(transitions)
         all_queue_requests.append(queue_requests)
         all_power.append(power)
+        all_rewards.append(rewards)
 
-    return all_transitions, all_queue_requests, all_power
+    return all_transitions, all_queue_requests, all_power, all_rewards
+
+
+def plot_results(transitions, queue_requests, power, rewards, baseline_power):
+    """Plot the results of the simulation."""
+    plt.figure(1)
+    plt.plot(
+        np.mean(queue_requests, axis=0),
+        label="Average Queue Length (RL)",
+    )
+    plt.ylabel("Queue Length")
+    plt.xlabel("Time Step")
+    plt.title("Average Queue Length over Time")
+    plt.legend()
+
+    plt.figure(2)
+    # Calculate RMS Power
+    rms_power = np.sqrt(np.mean(np.array(power) ** 2, axis=0))
+    rms_baseline_power = np.sqrt(baseline_power**2)
+    plt.plot(rms_power, label="RMS Power Consumption (RL)")
+    plt.plot(rms_baseline_power, label="RMS Power Consumption (Baseline)")
+    plt.ylabel("Power Consumption (mW)")
+    plt.xlabel("Time Step")
+    plt.title("RMS Power Consumption over Time")
+    plt.legend()
+
+    # Plot Rewards
+    plt.figure(3)
+    plt.plot(np.mean(rewards, axis=0), label="Average Reward (RL)")
+    plt.ylabel("Reward")
+    plt.xlabel("Time Step")
+    plt.title("Average Reward over Time")
+    plt.legend()
+    plt.show()
+
+
+def always_active_baseline(env, num_episodes=10):
+    """Run a baseline where the controller is always active."""
+    all_power = []
+    for _ in range(num_episodes):
+        obs, _ = env.reset()
+        done = False
+        power = []
+        while not done:
+            # Always choose "go_active" action
+            obs, reward, done, _, _ = env.step(0)
+            power.append(-reward)
+        all_power.append(power)
+    return np.mean(all_power, axis=0)
 
 
 if __name__ == "__main__":
@@ -99,7 +158,15 @@ if __name__ == "__main__":
         model = DQN.load(args.model_path)
 
         # Evaluate the agent
-        transitions, queue_requests, power = evaluate_agent(env, model, num_episodes=10)
+        transitions, queue_requests, power, rewards = evaluate_agent(
+            env, model, num_episodes=10
+        )
+
+        # Generate baseline
+        baseline_power = always_active_baseline(env, num_episodes=10)
+
+        # Plot results
+        plot_results(transitions, queue_requests, power, rewards, baseline_power)
 
     else:
         # Train the agent
