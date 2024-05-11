@@ -7,8 +7,9 @@ import numpy as np
 import pandas as pd
 from gymnasium import spaces
 
-from ..config import get_default_cfg
-from ..structs import IoTQueue
+from config import get_default_cfg
+from structs import IoTQueue
+
 from .controller import Controller
 from .node import IoTNode
 
@@ -44,11 +45,13 @@ class SystemEnvironment(gym.Env):
         self.action_space = spaces.Discrete(2)
 
         # observation space
-        state_size = (
-            len(self.controller.states) + len(self.node.states) + len(self.queue.states)
-        )
-        self.observation_space = spaces.Box(
-            low=0, high=np.inf, shape=(state_size, 2), dtype=np.float32
+        self.observation_space = spaces.Dict(
+            {
+                "controller_state": spaces.Discrete(len(self.controller.states)),
+                "node_state": spaces.Discrete(len(self.node.states)),
+                "queue_state": spaces.Discrete(self.queue_size + 1),
+                "requests": spaces.Discrete(1000000),
+            }
         )
 
     def _init_system(self):
@@ -63,13 +66,17 @@ class SystemEnvironment(gym.Env):
         """
         Get the observation
         """
-        return np.array(
-            [
-                self.controller.current_state,
-                self.node.current_state,
-                self.queue.current_state,
-            ]
-        )
+
+        obs = {
+            "controller_state": self.controller.states.index(
+                self.controller.current_state
+            ),
+            "node_state": self.node.states.index(self.node.current_state),
+            "queue_state": self.queue.current_state,
+            "requests": self.node.requests,
+        }
+
+        return obs
 
     def _get_info(self):
         """
@@ -105,10 +112,10 @@ class SystemEnvironment(gym.Env):
                     power_s2a = 0
                     time_s2a = st["state"]["transient_timing"]["a2s"]
 
-                    if st["state"]["power_mode"] == "active":
+                    if self.controller.previous_action == "go_sleep":
                         power_s2a = st["state"]["power"]
 
-                    elif st["state"]["power_mode"] == "sleep":
+                    elif self.controller.previous_action == "go_active":
                         power_a2s = st["state"]["power"]
 
                     return (power_a2s * time_a2s + power_s2a * time_s2a) / 2.0
@@ -125,6 +132,12 @@ class SystemEnvironment(gym.Env):
     def step(self, action):
         """
         Take a step in the environment
+
+        Args:
+            action (int): The action to take.
+
+        Returns:
+            tuple: The observation, reward, done flag, truncated flag, and info.
         """
         action = self.ACTION_MAP[action]
         self.controller.set_power_mode(action)
@@ -132,6 +145,7 @@ class SystemEnvironment(gym.Env):
 
         if self.time in self.inter_arrivals:
             reqs = self.node.generate_requests(np.random.randint(1, 8))
+            self.node.requests = reqs
             self.queue.allocate_space(reqs)
             self.requests_arrival.append(reqs)
         else:
@@ -144,18 +158,29 @@ class SystemEnvironment(gym.Env):
 
         self.node.determine_state()
 
-        if self.time >= cfg.num_steps:
-            done = True
+        done = True if self.time >= cfg.num_steps else False
 
         reward = -1 * self.cost_function(delta=self.delta)  # minimize the cost
 
         return self._get_observation(), reward, done, False, self._get_info()
 
-    def reset(self):
+    def reset(self, seed=None, options=None):
         """
         Reset the environment
+
+        Args:
+            seed (int, optional): The seed for the random number generator. Defaults
+                to None.
+            options (dict, optional): Additional options for resetting the
+                environment. Defaults to None.
+
+        Returns:
+            tuple: The observation and info.
         """
+        super().reset(seed=seed)
+
         self._init_system()
         self.requests_arrival = []
+        self.time = 0
 
         return self._get_observation(), self._get_info()
