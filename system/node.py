@@ -60,16 +60,16 @@ class IoTNode:
         self.previous_state = self.current_state
 
         lowest_lower_bound = 0
-        for state in self.states:
-            i = self.states.index(state)
+        for st in self.states:
+            i = self.states.index(st)
             lower_bound, upper_bound = self._get_ema_bounds(i)
 
             if i == 0:
                 lowest_lower_bound = lower_bound
 
             if lower_bound < self.requests < upper_bound:
-                self.current_state = state
+                self.current_state = st
             elif i == (len(self.states) - 1) and self.requests > upper_bound:
-                self.current_state = state
+                self.current_state = st
             elif i == (len(self.states) - 1) and self.requests <= lowest_lower_bound:
                 self.current_state = self.states[0]

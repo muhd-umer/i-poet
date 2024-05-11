@@ -100,25 +100,25 @@ class SystemEnvironment(gym.Env):
             queue_state = self.queue.current_state
 
         if cnt_state == "transient":
-            for state in cnt_sm:
-                if state["state"]["power_mode"] == "transient":
+            for st in cnt_sm:
+                if st["state"]["power_mode"] == "transient":
                     power_a2s = 0
-                    time_a2s = state["state"]["transient_timing"]["s2a"]
+                    time_a2s = st["state"]["transient_timing"]["s2a"]
                     power_s2a = 0
-                    time_s2a = state["state"]["transient_timing"]["a2s"]
+                    time_s2a = st["state"]["transient_timing"]["a2s"]
 
-                    if state["state"]["power_mode"] == "active":
-                        power_s2a = state["state"]["power"]
+                    if st["state"]["power_mode"] == "active":
+                        power_s2a = st["state"]["power"]
 
-                    elif state["state"]["power_mode"] == "sleep":
-                        power_a2s = state["state"]["power"]
+                    elif st["state"]["power_mode"] == "sleep":
+                        power_a2s = st["state"]["power"]
 
                     return (power_a2s * time_a2s + power_s2a * time_s2a) / 2.0
 
         else:
-            for state in cnt_sm:
-                if state["state"]["power_mode"] == cnt_state:
-                    power_cost = state["state"]["power"]
+            for st in cnt_sm:
+                if st["state"]["power_mode"] == cnt_state:
+                    power_cost = st["state"]["power"]
 
             performance_penalty = queue_state
 

@@ -31,14 +31,19 @@ class Controller:
         ) = self.previous_action = None
         # variable to help compute state size
         self.states = [st["state"]["power_mode"] for st in state_machine]
+        self.actions = [
+            st["state"]["command"]
+            for st in state_machine
+            if st["state"]["command"] is not None
+        ]
         self.init_states()
 
     def init_states(self):
         """Initialize the states from the state machine."""
-        for state in self.state_machine:
-            if state["state"]["init"]:
-                self.current_state = state["state"]["power_mode"]
-                self.current_action = state["state"]["command"]
+        for st in self.state_machine:
+            if st["state"]["init"]:
+                self.current_state = st["state"]["power_mode"]
+                self.current_action = st["state"]["command"]
         self.previous_state = self.next_state = self.current_state
         self.previous_action = self.current_action
 
@@ -51,9 +56,9 @@ class Controller:
         Returns:
             str: The next state.
         """
-        for state in self.state_machine:
-            cnt_commands = state["state"]["command"]
-            cnt_state = state["state"]["power_mode"]
+        for st in self.state_machine:
+            cnt_commands = st["state"]["command"]
+            cnt_state = st["state"]["power_mode"]
 
             if command == cnt_commands:
                 return "sleep" if cnt_state == "active" else "active"
