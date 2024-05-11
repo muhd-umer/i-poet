@@ -20,9 +20,9 @@ def get_default_cfg():
     cfg = Box()
 
     # training
-    cfg.total_eps = 50
     cfg.num_steps = 100
     cfg.delta = 1.0
+    cfg.total_timesteps = 100000
 
     # environment
     cfg.inter_arrivals = [1, 2, 3, 4, 10, 11, 12, 13, 60, 61]
@@ -53,7 +53,10 @@ def get_default_cfg():
                 "power_mode": "transient",
                 "transient_timing": {"s2a": 80, "a2s": 36},
                 "command": None,
+                "power": 0,
                 "init": False,
             }
         },
     ]
+
+    return cfg
