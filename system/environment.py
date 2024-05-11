@@ -112,13 +112,24 @@ class SystemEnvironment(gym.Env):
                     power_s2a = 0
                     time_s2a = st["state"]["transient_timing"]["a2s"]
 
-                    if self.controller.previous_action == "go_sleep":
+                    if st["state"]["power_mode"] == "active":
                         power_s2a = st["state"]["power"]
 
-                    elif self.controller.previous_action == "go_active":
+                    elif st["state"]["power_mode"] == "sleep":
                         power_a2s = st["state"]["power"]
 
-                    return (power_a2s * time_a2s + power_s2a * time_s2a) / 2.0
+                    transient_power = (
+                        power_a2s * time_a2s + power_s2a * time_s2a
+                    ) / 2.0
+                    transition_penalty = 0.1 * (
+                        time_a2s + time_s2a
+                    )  # Transition penalty
+                    performance_penalty = queue_state
+                    return (
+                        transient_power
+                        + transition_penalty
+                        + delta * performance_penalty
+                    )
 
         else:
             for st in cnt_sm:
