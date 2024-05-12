@@ -159,7 +159,7 @@ class SystemEnvironment(gym.Env):
         else:
             self.requests_arrival.append(0)
 
-        if self.queue.requests > 0 and self.controller.current_state == "active":
+        if self.queue.is_deque_ready and self.controller.current_state == "active":
             self.queue.dequeue_request()
         else:
             self.queue.enqueue_request()
