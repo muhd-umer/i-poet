@@ -18,10 +18,10 @@ from system import SystemEnvironment
 plt.rcParams["font.family"] = "monospace"
 # plt.rcParams["axes.formatter.use_mathtext"] = True
 plt.rcParams["figure.figsize"] = (7, 5)  # set default size of plots
-
-
-# increase font size
 plt.rcParams.update({"font.size": 10})
+
+# reduce whitespace in plot save
+plt.rcParams["savefig.bbox"] = "tight"
 
 cfg = get_default_cfg()
 
