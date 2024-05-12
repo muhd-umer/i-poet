@@ -2,11 +2,11 @@
 
 This project explores the use of Reinforcement Learning (RL) to optimize power consumption in an IoT system. The system consists of:
 
-* **IoT Node:** A device that generates requests for service.
-* **Controller:** A device that manages the power state (active or sleep) of the IoT Node.
-* **Service Queue:** A queue that buffers requests from the IoT Node.
+* **IoT Node:** Device that generates requests for service
+* **Controller:** Device that manages the power state (active or sleep) of the IoTNode
+* **IoT Queue:** Queue that buffers requests from the IoTNode
 
-The goal is to train an RL agent (acting as the brains of Controller) to minimize the total power consumption of the IoT Node, while still efficiently handling incoming requests.
+The goal is to train an RL agent (acting as the brains of Controller) to minimize the total power consumption of the IoTNode, while still efficiently handling incoming requests.
 
 <!-- block diagram centered : resources/block.png -->
 <p align="center">
@@ -29,7 +29,7 @@ iot-power-optim/
 │   ├── __init__.py
 │   ├── controller.py   # Controller class
 │   ├── environment.py    # Environment class
-│   └── node.py   # IoT Node class
+│   └── node.py   # IoTNode class
 ├── figs/
 ├── logs/   # Training logs and model checkpoints
 ├── resources/
@@ -46,10 +46,10 @@ iot-power-optim/
 The environment is implemented using the [Gymnasium (Gym)](https://gymnasium.farama.org/) framework.
 It simulates the dynamics of the IoT system, including:
 
-* **Request arrivals:** Requests arrive at the IoT Node according to a predefined pattern (e.g., inter-arrival times).
-* **Controller actions:** The Controller can choose to put the IoT Node in either "active" or "sleep" mode.
-* **Power consumption:** The IoT Node consumes different amounts of power depending on its state (active or sleep) and the time spent transitioning between states.
-* **Queue management:** The Service Queue buffers requests, and the Controller must decide when to process them based on the queue length.
+* **Request arrivals:** Requests arrive at the IoTNode according to a predefined pattern (e.g., inter-arrival times).
+* **Controller actions:** The Controller can choose to put the IoTNode in either "active" or "sleep" mode.
+* **Power consumption:** The IoTNode consumes different amounts of power depending on its state (active or sleep) and the time spent transitioning between states.
+* **Queue management:** The IoTQueue buffers requests, and the Controller must decide when to process them based on the queue length.
 * **Rewards:** The agent receives rewards based on the power consumption and potentially other factors, such as queue length.
 
 ## Agents
