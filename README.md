@@ -6,16 +6,45 @@ This project explores the use of Reinforcement Learning (RL) to optimize power c
 * **Controller:** A device that manages the power state (active or sleep) of the IoT Node.
 * **Service Queue:** A queue that buffers requests from the IoT Node.
 
-The goal is to train an RL agent (acting as the Controller) to minimize the total power consumption of the IoT Node, while still efficiently handling incoming requests.
+The goal is to train an RL agent (acting as the brains of Controller) to minimize the total power consumption of the IoT Node, while still efficiently handling incoming requests.
 
 <!-- block diagram centered : resources/block.png -->
 <p align="center">
-  <img src="resources/block.png" alt="Block Diagram" width="80%"/>
+  <img src="resources/block.png" alt="Block Diagram" width="90%"/>
 </p>
+
+## Repository Structure
+
+The repository is organized as follows:
+
+```bash
+iot-power-optim/
+├── config
+│   ├── __init__.py
+│   └── default.py
+├── structs
+│   ├── __init__.py
+│   └── queue.py
+├── system
+│   ├── __init__.py
+│   ├── controller.py
+│   ├── environment.py
+│   └── node.py
+├── figs/
+├── logs/
+├── resources/
+├── README.md
+├── LICENSE
+├── .gitignore
+├── pyclean.sh
+├── requirements.txt
+└── train.py
+```
 
 ## Environment
 
-The environment is implemented using the Gymnasium library (formerly OpenAI Gym). It simulates the dynamics of the IoT system, including:
+The environment is implemented using the [Gymnasium (Gym)](https://gymnasium.farama.org/) framework.
+It simulates the dynamics of the IoT system, including:
 
 * **Request arrivals:** Requests arrive at the IoT Node according to a predefined pattern (e.g., inter-arrival times).
 * **Controller actions:** The Controller can choose to put the IoT Node in either "active" or "sleep" mode.
@@ -27,21 +56,17 @@ The environment is implemented using the Gymnasium library (formerly OpenAI Gym)
 
 The project implements two types of RL agents:
 
-* **DQN (Deep Q-Network):** A value-based agent that learns a Q-function to estimate the expected future rewards for each action in a given state.
-* **PPO (Proximal Policy Optimization):** A policy-based agent that directly learns the policy (mapping from states to actions) that maximizes rewards.
+* `DQN (Deep Q-Network)` – A value-based agent that learns a Q-function to estimate the expected future rewards for each action in a given state.
+* `PPO (Proximal Policy Optimization)` – A policy-based agent that directly learns the policy (mapping from states to actions) that maximizes rewards.
 
 ## Baselines
 
 To assess the performance of the RL agents, several baselines are implemented:
 
-* **Always Active:** The controller is always in the active state.
-* **Random Action:** The controller randomly chooses between active and sleep modes.
-* **Threshold-Based Sleep:** The controller sleeps when the queue length drops below a threshold and wakes up when it exceeds another threshold.
-* **Periodic Sleep:** The controller alternates between active and sleep modes with fixed durations.
-
-## Configuration
-
-The `config.py` file contains the default configuration parameters for the environment, training, and agents. 
+* `AlwaysActive` – The controller is always in the active state.
+* `RandomAct` – The controller randomly chooses between active and sleep modes.
+* `Threshold-based` – The controller sleeps when the queue length drops below a threshold and wakes up when it exceeds another threshold.
+* `PeriodicSleep` – The controller alternates between active and sleep modes with fixed durations.
 
 ## Training and Evaluation
 
@@ -50,7 +75,7 @@ To train and evaluate the RL agents, use the `train.py` script. Usage:
 ```bash
 python train.py [-h]
                 [--eval-only]
-                [--agent {DQN,PPO,both}]
+                [--agent {DQN, PPO, both}]
 ```
 
 ## Future Work
