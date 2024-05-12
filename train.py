@@ -256,7 +256,7 @@ def plot_results(
         plt.axhline(y=rms_baseline, color="red", linestyle="dotted", linewidth=2)
         plt.text(
             episode_duration - 1,
-            rms_baseline + 0.1,
+            rms_baseline + 0.25,
             f"RMS AlwaysActive: {rms_baseline:.2f} mW",
             ha="right",
             va="bottom",
@@ -274,7 +274,7 @@ def plot_results(
         plt.axhline(y=rms_random, color="purple", linestyle="dotted", linewidth=2)
         plt.text(
             episode_duration - 1,
-            rms_random + 0.1,
+            rms_random + 0.25,
             f"RMS RandAct: {rms_random:.2f} mW",
             ha="right",
             va="bottom",
