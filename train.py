@@ -5,6 +5,7 @@ Main script to train RL agents on the system environment
 import argparse
 import math
 import os
+import random
 
 import matplotlib.pyplot as plt
 import numpy as np
@@ -14,13 +15,13 @@ from stable_baselines3.common.env_checker import check_env
 from config import get_default_cfg
 from system import SystemEnvironment
 
-plt.rcParams["font.family"] = "cmr10"
-plt.rcParams["axes.formatter.use_mathtext"] = True
+plt.rcParams["font.family"] = "monospace"
+# plt.rcParams["axes.formatter.use_mathtext"] = True
 plt.rcParams["figure.figsize"] = (7, 5)  # set default size of plots
 
 
 # increase font size
-plt.rcParams.update({"font.size": 11})
+plt.rcParams.update({"font.size": 10})
 
 cfg = get_default_cfg()
 
@@ -136,10 +137,79 @@ def always_active_baseline(env, num_episodes=10):
     return np.mean(all_power, axis=0)
 
 
+def random_action_baseline(env, num_episodes=10):
+    """Run a baseline where the controller takes random actions."""
+    all_power = []
+    for _ in range(num_episodes):
+        obs, _ = env.reset()
+        done = False
+        power = []
+        while not done:
+            # Choose random action
+            action = random.randint(0, 1)
+            obs, reward, done, _, _ = env.step(action)
+            power.append(-reward)
+        all_power.append(power)
+    return np.mean(all_power, axis=0)
+
+
+def threshold_based_sleep_baseline(
+    env, sleep_threshold=2, wake_threshold=6, num_episodes=10
+):
+    """Run a baseline where the controller sleeps based on queue thresholds."""
+    all_power = []
+    for _ in range(num_episodes):
+        obs, _ = env.reset()
+        done = False
+        power = []
+        while not done:
+            # Choose action based on threshold
+            if env.queue.current_state <= sleep_threshold:
+                action = 1  # go to sleep
+            elif env.queue.current_state >= wake_threshold:
+                action = 0  # wake up
+            else:
+                action = 0  # stay in current state (active if already active)
+            obs, reward, done, _, _ = env.step(action)
+            power.append(-reward)
+        all_power.append(power)
+    return np.mean(all_power, axis=0)
+
+
+def periodic_sleep_baseline(env, active_duration=5, sleep_duration=15, num_episodes=10):
+    """Run a baseline with periodic sleep/wake cycles."""
+    all_power = []
+    for _ in range(num_episodes):
+        obs, _ = env.reset()
+        done = False
+        power = []
+        counter = 0
+        state = 0  # 0: active, 1: sleep
+        while not done:
+            if state == 0 and counter >= active_duration:
+                action = 1  # switch to sleep
+                state = 1
+                counter = 0
+            elif state == 1 and counter >= sleep_duration:
+                action = 0  # switch to active
+                state = 0
+                counter = 0
+            else:
+                action = state  # continue in current state
+            obs, reward, done, _, _ = env.step(action)
+            power.append(-reward)
+            counter += 1
+        all_power.append(power)
+    return np.mean(all_power, axis=0)
+
+
 def plot_results(
     dqn_power=None,
     ppo_power=None,
     baseline_power=None,
+    random_power=None,
+    threshold_power=None,
+    periodic_power=None,
     ppo_queue_requests=None,
     dqn_queue_requests=None,
     dqn_transitions=None,
@@ -155,41 +225,107 @@ def plot_results(
     if dqn_power is not None:
         plt.plot(dqn_power, label="DQN", color="blue")
         rms_dqn = math.sqrt(sum([p**2 for p in dqn_power]) / len(dqn_power))
-        plt.axhline(y=rms_dqn, color="blue", linestyle="dotted", label="RMS DQN")
+        plt.axhline(y=rms_dqn, color="blue", linestyle="dotted", linewidth=2)
         plt.text(
-            episode_duration - 1,
+            episode_duration - 50,
             rms_dqn - 0.15,
             f"RMS DQN: {rms_dqn:.2f} mW",
             ha="right",
             va="top",
+            fontweight="bold",
         )
 
     if ppo_power is not None:
         plt.plot(ppo_power, label="PPO", color="green")
         rms_ppo = math.sqrt(sum([p**2 for p in ppo_power]) / len(ppo_power))
-        plt.axhline(y=rms_ppo, color="green", linestyle="dotted", label="RMS PPO")
+        plt.axhline(y=rms_ppo, color="green", linestyle="dotted", linewidth=2)
         plt.text(
-            episode_duration - 1,
-            rms_ppo + 0.1,
+            episode_duration - 58,
+            rms_ppo - 0.15,
             f"RMS PPO: {rms_ppo:.2f} mW",
             ha="right",
-            va="bottom",
+            va="top",
+            fontweight="bold",
         )
 
     if baseline_power is not None:
-        plt.plot(baseline_power, label="Always Active", color="red", linestyle="dashed")
+        plt.plot(baseline_power, label="AlwaysActive", color="red", linestyle="-")
         rms_baseline = math.sqrt(
             sum([p**2 for p in baseline_power]) / len(baseline_power)
         )
+        plt.axhline(y=rms_baseline, color="red", linestyle="dotted", linewidth=2)
+        plt.text(
+            episode_duration - 1,
+            rms_baseline + 0.1,
+            f"RMS AlwaysActive: {rms_baseline:.2f} mW",
+            ha="right",
+            va="bottom",
+            fontweight="bold",
+        )
+    if random_power is not None:
+        plt.plot(
+            random_power,
+            label="RandAct",
+            color="purple",
+            linestyle="-",
+            linewidth=2,
+        )
+        rms_random = math.sqrt(sum([p**2 for p in random_power]) / len(random_power))
+        plt.axhline(y=rms_random, color="purple", linestyle="dotted", linewidth=2)
+        plt.text(
+            episode_duration - 1,
+            rms_random + 0.1,
+            f"RMS RandAct: {rms_random:.2f} mW",
+            ha="right",
+            va="bottom",
+            fontweight="bold",
+        )
+    if threshold_power is not None:
+        plt.plot(
+            threshold_power,
+            label="Threshold-based",
+            color="orange",
+            linestyle="-",
+        )
+        rms_threshold = math.sqrt(
+            sum([p**2 for p in threshold_power]) / len(threshold_power)
+        )
         plt.axhline(
-            y=rms_baseline, color="red", linestyle="dotted", label="RMS Always Active"
+            y=rms_threshold,
+            color="orange",
+            linestyle="dotted",
         )
         plt.text(
             episode_duration - 1,
-            rms_baseline - 0.15,
-            f"RMS Always Active: {rms_baseline:.2f} mW",
+            rms_threshold + 0.1,
+            f"RMS Threshold-based: {rms_threshold:.2f} mW",
+            ha="right",
+            va="bottom",
+            fontweight="bold",
+        )
+
+    if periodic_power is not None:
+        plt.plot(
+            periodic_power,
+            label="PeriodicSleep",
+            color="brown",
+            linestyle="-",
+        )
+        rms_periodic = math.sqrt(
+            sum([p**2 for p in periodic_power]) / len(periodic_power)
+        )
+        plt.axhline(
+            y=rms_periodic,
+            color="brown",
+            linestyle="dotted",
+        )
+        plt.text(
+            episode_duration - 10,
+            rms_periodic - 0.15,
+            f"RMS PeriodicSleep: {rms_periodic:.2f} mW",
             ha="right",
             va="top",
+            fontweight="bold",
         )
 
     plt.xlim(0, episode_duration)
@@ -197,7 +333,7 @@ def plot_results(
     plt.ylabel("Power (mW)")
     plt.xlabel("Time Step")
     plt.title("Power Consumption")
-    plt.legend()
+    plt.legend(loc="upper left")
     plt.grid(alpha=0.3, which="both")
     plt.savefig("figs/power_comparison.png", dpi=300)
 
@@ -319,14 +455,20 @@ if __name__ == "__main__":
                 "No saved models found for evaluation. Please train a model first."
             )
 
-        # Generate baseline
+        # Generate baselines
         baseline_power = always_active_baseline(env, num_episodes=10)
+        random_power = random_action_baseline(env, num_episodes=10)
+        threshold_power = threshold_based_sleep_baseline(env, num_episodes=10)
+        periodic_power = periodic_sleep_baseline(env, num_episodes=10)
 
         # Plot results
         plot_results(
             dqn_power=dqn_power,
             ppo_power=ppo_power,
             baseline_power=baseline_power,
+            random_power=random_power,
+            threshold_power=threshold_power,
+            periodic_power=periodic_power,
             ppo_queue_requests=ppo_queue_requests[-1],
             dqn_queue_requests=dqn_queue_requests[-1],
             dqn_transitions=dqn_transitions,
