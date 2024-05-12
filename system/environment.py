@@ -45,12 +45,13 @@ class SystemEnvironment(gym.Env):
         self.action_space = spaces.Discrete(2)
 
         # observation space
+        by2bi = 8  # 1 byte = 8 bits
         self.observation_space = spaces.Dict(
             {
                 "controller_state": spaces.Discrete(len(self.controller.states)),
                 "node_state": spaces.Discrete(len(self.node.states)),
                 "queue_state": spaces.Discrete(self.queue_size + 1),
-                "requests": spaces.Discrete(1000000),
+                "requests": spaces.Discrete(int(by2bi * 8 / self.transfer_rate)),
             }
         )
 
@@ -118,7 +119,19 @@ class SystemEnvironment(gym.Env):
                     elif st["state"]["power_mode"] == "sleep":
                         power_a2s = st["state"]["power"]
 
-                    return (power_a2s * time_a2s + power_s2a * time_s2a) / 2.0
+                    transient_power = (
+                        power_a2s * time_a2s + power_s2a * time_s2a
+                    ) / 2.0
+                    transition_penalty = 0.01 * (
+                        time_a2s + time_s2a
+                    )  # Transition penalty
+                    performance_penalty = queue_state
+
+                    return (
+                        transient_power
+                        + transition_penalty
+                        + delta * performance_penalty
+                    )
 
         else:
             for st in cnt_sm:
@@ -144,7 +157,7 @@ class SystemEnvironment(gym.Env):
         self.time += 1
 
         if self.time in self.inter_arrivals:
-            reqs = self.node.generate_requests(np.random.randint(1, 8))
+            reqs = self.node.generate_requests(self.np_random.integers(1, 8, 1)[0])
             self.node.requests = reqs
             self.queue.allocate_space(reqs)
             self.requests_arrival.append(reqs)
