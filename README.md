@@ -10,7 +10,7 @@ The goal is to train an RL agent (acting as the Controller) to minimize the tota
 
 <!-- block diagram centered : resources/block.png -->
 <p align="center">
-  <img src="resources/block.png" alt="Block Diagram" width="600"/>
+  <img src="resources/block.png" alt="Block Diagram" width="80%"/>
 </p>
 
 ## Environment
