@@ -197,7 +197,7 @@ def plot_results(
     plt.ylabel("Power (mW)")
     plt.xlabel("Time Step")
     plt.title("Power Consumption")
-    plt.legend(fancybox=True, framealpha=1, loc="lower left")
+    plt.legend()
     plt.grid(alpha=0.3, which="both")
     plt.savefig("figs/power_comparison.png", dpi=300)
 
