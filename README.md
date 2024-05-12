@@ -84,7 +84,7 @@ The following figure shows the power consumption of the IoTNode for different ag
 
 <!-- block diagram centered : resources/power_consumption.png -->
 <p align="center">
-  <img src="resources/power_comparison.png" alt="Power Consumption" width="50%"/>
+  <img src="resources/power_comparison.png" alt="Power Consumption" width="75%"/>
 </p>
 
 As shown, the RL agents (`DQN` and `PPO`) achieve lower RMS power values compared to the baselines, indicating better power optimization. The `AlwaysActive` baseline consumes the most power, as the IoTNode is always active, while the `Threshold-based` and `PeriodicSleep` baselines show intermediate power consumption. The `RandomAct` baseline exhibits high variance in power consumption due to its random nature.
