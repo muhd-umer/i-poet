@@ -16,6 +16,8 @@ from system import SystemEnvironment
 
 plt.rcParams["font.family"] = "cmr10"
 plt.rcParams["axes.formatter.use_mathtext"] = True
+plt.rcParams["figure.figsize"] = (7, 5)  # set default size of plots
+
 
 # increase font size
 plt.rcParams.update({"font.size": 11})
@@ -195,8 +197,8 @@ def plot_results(
     plt.ylabel("Power (mW)")
     plt.xlabel("Time Step")
     plt.title("Power Consumption")
-    plt.legend(fancybox=True, framealpha=0.5)
-    plt.grid(alpha=0.3)
+    plt.legend(fancybox=True, framealpha=1, loc="lower left")
+    plt.grid(alpha=0.3, which="both")
     plt.savefig("figs/power_comparison.png", dpi=300)
 
     # FIGURE 2 - Requests in Queue Over Time
@@ -210,7 +212,7 @@ def plot_results(
         plt.title("PPO: Requests in Queue")
         plt.legend()
         plt.xlim(0, episode_duration)
-        plt.grid(alpha=0.3)
+        plt.grid(alpha=0.3, which="both")
         plt.savefig("figs/ppo_queue_requests.png", dpi=300)
 
     if dqn_queue_requests is not None:
@@ -223,7 +225,7 @@ def plot_results(
         plt.title("DQN: Requests in Queue")
         plt.legend()
         plt.xlim(0, episode_duration)
-        plt.grid(alpha=0.3)
+        plt.grid(alpha=0.3, which="both")
         plt.savefig("figs/dqn_queue_requests.png", dpi=300)
 
     # FIGURE 3 - Interarrivals and Power Mode (DQN)
@@ -240,7 +242,7 @@ def plot_results(
         plt.minorticks_on()
         plt.legend()
         plt.xlim(0, episode_duration)
-        plt.grid(alpha=0.3)
+        plt.grid(alpha=0.3, which="both")
         plt.savefig("figs/dqn_transitions.png", dpi=300)
 
     # FIGURE 4 - Interarrivals and Power Mode (PPO)
@@ -261,7 +263,7 @@ def plot_results(
         plt.title("Controller: PPO")
         plt.legend()
         plt.xlim(0, episode_duration)
-        plt.grid(alpha=0.3)
+        plt.grid(alpha=0.3, which="both")
         plt.savefig("figs/ppo_transitions.png", dpi=300)
 
     plt.show()
