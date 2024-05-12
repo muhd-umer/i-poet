@@ -1,4 +1,4 @@
-# IoT Power Optimization with Reinforcement Learning
+# Intelligent IoT Power Optimization
 
 This project explores the use of Reinforcement Learning (RL) to optimize power consumption in an IoT system. The system consists of:
 
