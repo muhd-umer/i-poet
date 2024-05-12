@@ -17,7 +17,7 @@ The goal is to train an RL agent (acting as the brains of Controller) to minimiz
 
 The repository is organized as follows:
 
-```bash
+```powershell
 iot-power-optim/
 ├── config
 │   ├── __init__.py
