@@ -20,9 +20,9 @@ def get_default_cfg():
     cfg = Box()
 
     # training
-    cfg.num_steps = 200
+    cfg.num_steps = 100
     cfg.delta = 1.0
-    cfg.total_timesteps = 10000
+    cfg.total_timesteps = 50000
 
     # environment
     cfg.inter_arrivals = [1, 2, 3, 4, 10, 11, 12, 13, 60, 61]
