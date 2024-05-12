@@ -22,10 +22,10 @@ def get_default_cfg():
     # training
     cfg.num_steps = 100
     cfg.delta = 1.0
-    cfg.total_timesteps = 50000
+    cfg.total_timesteps = 30000
 
     # environment
-    cfg.inter_arrivals = [1, 2, 3, 4, 10, 11, 12, 13, 60, 61]
+    cfg.inter_arrivals = [1, 2, 3, 5, 8, 15, 19, 25, 32, 49]
     cfg.transfer_rate = 2  # Mbps
     cfg.queue_size = 12
     cfg.valid_reqs = ["idle", "low", "high"]
