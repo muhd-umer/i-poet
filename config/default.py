@@ -1,5 +1,5 @@
 """
-Default config file for the environment
+Default config file for experiments
 
 Specifications reference:
 -> SimpleLink™ Arm® Cortex®-M4F: https://www.ti.com/product/CC2652R7
@@ -11,7 +11,7 @@ from box import Box
 
 def get_default_cfg():
     """
-    Get the default configuration for the environment
+    Get the default configuration
 
     Returns:
         Box: Default configuration
