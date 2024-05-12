@@ -21,17 +21,17 @@ The repository is organized as follows:
 iot-power-optim/
 ├── config
 │   ├── __init__.py
-│   └── default.py
+│   └── default.py    # Default configuration settings
 ├── structs
 │   ├── __init__.py
-│   └── queue.py
+│   └── queue.py    # Queue data structure
 ├── system
 │   ├── __init__.py
-│   ├── controller.py
-│   ├── environment.py
-│   └── node.py
+│   ├── controller.py   # Controller class
+│   ├── environment.py    # Environment class
+│   └── node.py   # IoT Node class
 ├── figs/
-├── logs/
+├── logs/   # Training logs and model checkpoints
 ├── resources/
 ├── README.md
 ├── LICENSE
