@@ -122,7 +122,7 @@ class SystemEnvironment(gym.Env):
                     transient_power = (
                         power_a2s * time_a2s + power_s2a * time_s2a
                     ) / 2.0
-                    transition_penalty = 0.1 * (
+                    transition_penalty = 0.03 * (
                         time_a2s + time_s2a
                     )  # Transition penalty
 

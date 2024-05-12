@@ -1,5 +1,5 @@
 """
-Default config file for experiments
+Default config file for the environment
 
 Specifications reference:
 -> SimpleLink™ Arm® Cortex®-M4F: https://www.ti.com/product/CC2652R7
@@ -11,7 +11,7 @@ from box import Box
 
 def get_default_cfg():
     """
-    Get the default configuration
+    Get the default configuration for the environment
 
     Returns:
         Box: Default configuration
@@ -22,7 +22,7 @@ def get_default_cfg():
     # training
     cfg.num_steps = 100
     cfg.delta = 1.0
-    cfg.total_timesteps = 30000
+    cfg.total_timesteps = 10000
 
     # environment
     cfg.inter_arrivals = [1, 2, 3, 4, 10, 11, 12, 13, 60, 61]
