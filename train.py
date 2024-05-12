@@ -13,6 +13,12 @@ from stable_baselines3.common.env_checker import check_env
 from config import get_default_cfg
 from system import SystemEnvironment
 
+plt.rcParams["font.family"] = "cmr10"
+plt.rcParams["axes.formatter.use_mathtext"] = True
+
+# increase font size
+plt.rcParams.update({"font.size": 11})
+
 cfg = get_default_cfg()
 
 
@@ -34,6 +40,7 @@ def train_dqn(env, total_timesteps, policy_kwargs):
         verbose=1,
         tensorboard_log="./logs/",
         policy_kwargs=policy_kwargs,
+        seed=67,
     )
     model.learn(total_timesteps=total_timesteps, log_interval=1, progress_bar=True)
 
@@ -67,7 +74,7 @@ def evaluate_agent(env, model, num_episodes=10):
             action, _ = model.predict(obs, deterministic=True)
             # Extract the integer action from the NumPy array
             action = action.item()
-            obs, reward, done, _, info = env.step(0)
+            obs, reward, done, _, info = env.step(action)
             transitions.append(env.controller.current_action)
             queue_requests.append(env.queue.current_state)
             power.append(-reward)  # Reward is negative cost
@@ -103,6 +110,73 @@ def always_active_baseline(env, num_episodes=10):
     return np.mean(all_power, axis=0)
 
 
+def plot_results(dqn_power, baseline_power, queue_requests, episode_duration):
+    """Generate result plots."""
+
+    # FIGURE 1 - Power Consumption Comparison
+    plt.figure(1)
+    plt.plot(dqn_power, label="DQN", color="blue")
+    plt.plot(baseline_power, label="Always Active", color="red", linestyle="dashed")
+
+    # Calculate RMS power for both DQN and baseline
+    rms_dqn = math.sqrt(sum([p**2 for p in dqn_power]) / len(dqn_power))
+    rms_baseline = math.sqrt(sum([p**2 for p in baseline_power]) / len(baseline_power))
+
+    # Draw a horizontal line at the RMS power
+    plt.axhline(y=rms_dqn, color="blue", linestyle="dotted", label="RMS DQN")
+    plt.axhline(
+        y=rms_baseline, color="red", linestyle="dotted", label="RMS Always Active"
+    )
+    plt.xlim(0, episode_duration)
+
+    plt.ylabel("Power (mW)")
+    plt.xlabel("Time Step")
+    plt.title("Power Consumption Comparison")
+    plt.legend()
+
+    # Add text above the line giving the value
+    plt.text(
+        episode_duration - 1,
+        rms_dqn + 0.1,
+        f"RMS DQN: {rms_dqn:.2f} mW",
+        ha="right",
+        va="bottom",
+    )
+    plt.text(
+        episode_duration - 1,
+        rms_baseline + 0.1,
+        f"RMS Always Active: {rms_baseline:.2f} mW",
+        ha="right",
+        va="bottom",
+    )
+
+    # FIGURE 2 - Queue Length Over Time
+    plt.figure(2)
+    plt.stem(queue_requests, label="Queue Length", linefmt="r-", markerfmt="ko")
+    plt.ylabel("Queue Length")
+    plt.xlabel("Time Step")
+    plt.title("Queue Length over Time")
+    plt.legend()
+    plt.xlim(0, episode_duration)
+
+    # FIGURE 3 - Interarrivals and Power Mode
+    plt.figure(3)
+    plt.plot(
+        env.timeline, label="Interarrivals", color="black", marker="o", linestyle="None"
+    )
+    go_active = [1 if i == "go_active" else 0 for i in transitions[-1]]  # last episode
+    plt.plot(go_active, label="Power Mode")
+    plt.yticks([0, 1], ("Sleep", "Active"))
+    plt.ylabel("Power Mode / Interarrivals")
+    plt.xlabel("Cycle")
+    plt.title("Service Provider - Power Mode")
+    plt.minorticks_on()
+    plt.legend()
+    plt.xlim(0, episode_duration)
+
+    plt.show()
+
+
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Train or evaluate the DQN agent.")
     parser.add_argument(
@@ -125,12 +199,24 @@ if __name__ == "__main__":
         model = DQN.load(args.model_path)
 
         # Evaluate the agent
-        transitions, queue_requests, power, rewards = evaluate_agent(
-            env, model, num_episodes=10
-        )
+        (
+            transitions,
+            queue_requests,
+            all_power,
+            rewards,
+        ) = evaluate_agent(env, model, num_episodes=10)
 
         # Generate baseline
         baseline_power = always_active_baseline(env, num_episodes=10)
+
+        dqn_power = np.mean(all_power, axis=0)
+
+        plot_results(
+            dqn_power,
+            baseline_power,
+            queue_requests[-1],
+            cfg.num_steps,
+        )
 
     else:
         # Train the agent
