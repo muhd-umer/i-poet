@@ -204,28 +204,28 @@ def plot_results(
     plt.grid(alpha=0.3)
     plt.savefig("extended_figs/power_comparison.png", dpi=300)
 
-    # FIGURE 2 - Requets in Queue Over Time
+    # FIGURE 2 - Requests in Queue Over Time
     if ppo_queue_requests is not None:
         plt.figure(2)
         plt.stem(
-            ppo_queue_requests, label="Requets in Queue", linefmt="r-", markerfmt="ko"
+            ppo_queue_requests, label="Requests in Queue", linefmt="r-", markerfmt="ko"
         )
         plt.ylabel("Queue length")
         plt.xlabel("Time Step")
-        plt.title("PPO: Requets in Queue")
+        plt.title("PPO: Requests in Queue")
         plt.legend()
         plt.xlim(0, episode_duration)
         plt.grid(alpha=0.3)
-        plt.savefig("extended_figs/ppp_queue_requests.png", dpi=300)
+        plt.savefig("extended_figs/ppo_queue_requests.png", dpi=300)
 
     if dqn_queue_requests is not None:
         plt.figure(3)
         plt.stem(
-            dqn_queue_requests, label="Requets in Queue", linefmt="b-", markerfmt="ko"
+            dqn_queue_requests, label="Requests in Queue", linefmt="b-", markerfmt="ko"
         )
         plt.ylabel("Queue length")
         plt.xlabel("Time Step")
-        plt.title("DQN: Requets in Queue")
+        plt.title("DQN: Requests in Queue")
         plt.legend()
         plt.xlim(0, episode_duration)
         plt.grid(alpha=0.3)
@@ -267,7 +267,7 @@ def plot_results(
         plt.legend()
         plt.xlim(0, episode_duration)
         plt.grid(alpha=0.3)
-        plt.savefig("extended_figs/ppp_transitions.png", dpi=300)
+        plt.savefig("extended_figs/ppo_transitions.png", dpi=300)
 
     plt.show()
 
