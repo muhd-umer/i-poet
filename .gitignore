@@ -219,6 +219,6 @@ build/
 *.asv
 
 logs/
-extended_logs/
+saved_logs/
 # extended_figs/
 # figs/
