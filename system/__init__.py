@@ -1,3 +1,4 @@
 from .controller import *
-from .environment import *
+from .env import *
+from .extended_env import *
 from .node import *
