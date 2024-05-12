@@ -48,7 +48,7 @@ def train_agent(env, total_timesteps, policy_kwargs, agent_type="DQN"):
             buffer_size=10000,
             train_freq=4,
             gamma=0.9,
-            seed=1703,
+            seed=42,
         )
     elif agent_type == "PPO":
         model = PPO(
@@ -60,13 +60,8 @@ def train_agent(env, total_timesteps, policy_kwargs, agent_type="DQN"):
             learning_rate=7.5e-4,
             n_steps=200,
             batch_size=200,
-            normalize_advantage=False,
-            ent_coef=1e-6,
-            clip_range=0.2,
-            gae_lambda=0.95,
-            n_epochs=12,
             gamma=0.9,
-            seed=1703,
+            seed=42,
         )
     else:
         raise ValueError(f"Invalid agent type: {agent_type}")
@@ -161,10 +156,10 @@ def plot_results(
         plt.axhline(y=rms_dqn, color="blue", linestyle="dotted", label="RMS DQN")
         plt.text(
             episode_duration - 1,
-            rms_dqn + 0.1,
+            rms_dqn - 0.15,
             f"RMS DQN: {rms_dqn:.2f} mW",
             ha="right",
-            va="bottom",
+            va="top",
         )
 
     if ppo_power is not None:
@@ -173,10 +168,10 @@ def plot_results(
         plt.axhline(y=rms_ppo, color="green", linestyle="dotted", label="RMS PPO")
         plt.text(
             episode_duration - 1,
-            rms_ppo - 0.15,
+            rms_ppo + 0.1,
             f"RMS PPO: {rms_ppo:.2f} mW",
             ha="right",
-            va="top",
+            va="bottom",
         )
 
     if baseline_power is not None:
@@ -189,10 +184,10 @@ def plot_results(
         )
         plt.text(
             episode_duration - 1,
-            rms_baseline + 0.1,
+            rms_baseline - 0.15,
             f"RMS Always Active: {rms_baseline:.2f} mW",
             ha="right",
-            va="bottom",
+            va="top",
         )
 
     plt.xlim(0, episode_duration)
@@ -200,32 +195,32 @@ def plot_results(
     plt.ylabel("Power (mW)")
     plt.xlabel("Time Step")
     plt.title("Power Consumption")
-    plt.legend()
+    plt.legend(fancybox=True, framealpha=0.5)
     plt.grid(alpha=0.3)
     plt.savefig("figs/power_comparison.png", dpi=300)
 
-    # FIGURE 2 - Requets in Queue Over Time
+    # FIGURE 2 - Requests in Queue Over Time
     if ppo_queue_requests is not None:
         plt.figure(2)
         plt.stem(
-            ppo_queue_requests, label="Requets in Queue", linefmt="r-", markerfmt="ko"
+            ppo_queue_requests, label="Requests in Queue", linefmt="r-", markerfmt="ko"
         )
         plt.ylabel("Queue length")
         plt.xlabel("Time Step")
-        plt.title("PPO: Requets in Queue")
+        plt.title("PPO: Requests in Queue")
         plt.legend()
         plt.xlim(0, episode_duration)
         plt.grid(alpha=0.3)
-        plt.savefig("figs/ppp_queue_requests.png", dpi=300)
+        plt.savefig("figs/ppo_queue_requests.png", dpi=300)
 
     if dqn_queue_requests is not None:
         plt.figure(3)
         plt.stem(
-            dqn_queue_requests, label="Requets in Queue", linefmt="b-", markerfmt="ko"
+            dqn_queue_requests, label="Requests in Queue", linefmt="b-", markerfmt="ko"
         )
         plt.ylabel("Queue length")
         plt.xlabel("Time Step")
-        plt.title("DQN: Requets in Queue")
+        plt.title("DQN: Requests in Queue")
         plt.legend()
         plt.xlim(0, episode_duration)
         plt.grid(alpha=0.3)
@@ -267,7 +262,7 @@ def plot_results(
         plt.legend()
         plt.xlim(0, episode_duration)
         plt.grid(alpha=0.3)
-        plt.savefig("figs/ppp_transitions.png", dpi=300)
+        plt.savefig("figs/ppo_transitions.png", dpi=300)
 
     plt.show()
 
