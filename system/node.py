@@ -16,13 +16,14 @@ class IoTNode:
     Determines the state of the node based on the number of requests and EMA.
     """
 
-    def __init__(self, states, alpha=1.0, transfer_rate=2.0):
+    def __init__(self, states, alpha=1.0, transfer_rate=2.0, node_id=0):
         """Initializes IoTNode with the given states and alpha value.
 
         Args:
             states (list): List of states.
             alpha (float): Alpha value for EMA calculation.
             transfer_rate (float): Transfer rate of the node in Mbps.
+            node_id (int): Unique identifier for the node.
         """
         self.states = states
         self.alpha = alpha
@@ -31,6 +32,7 @@ class IoTNode:
         self.requests = 0
         self.current_state = states[0]
         self.previous_state = self.current_state
+        self.node_id = node_id
 
     def _get_ema_bounds(self, state_index):
         """Calculates the EMA bounds for a given state index.
