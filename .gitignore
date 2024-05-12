@@ -219,3 +219,6 @@ build/
 *.asv
 
 logs/
+extended_logs/
+# extended_figs/
+# figs/
