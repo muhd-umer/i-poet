@@ -8,6 +8,11 @@ This project explores the use of Reinforcement Learning (RL) to optimize power c
 
 The goal is to train an RL agent (acting as the Controller) to minimize the total power consumption of the IoT Node, while still efficiently handling incoming requests.
 
+<!-- block diagram centered : resources/block.png -->
+<p align="center">
+  <img src="resources/block.png" alt="Block Diagram" width="600"/>
+</p>
+
 ## Environment
 
 The environment is implemented using the Gymnasium library (formerly OpenAI Gym). It simulates the dynamics of the IoT system, including:
