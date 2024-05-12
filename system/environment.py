@@ -122,16 +122,11 @@ class SystemEnvironment(gym.Env):
                     transient_power = (
                         power_a2s * time_a2s + power_s2a * time_s2a
                     ) / 2.0
-                    transition_penalty = 0.01 * (
+                    transition_penalty = 0.1 * (
                         time_a2s + time_s2a
                     )  # Transition penalty
-                    performance_penalty = queue_state
 
-                    return (
-                        transient_power
-                        + transition_penalty
-                        + delta * performance_penalty
-                    )
+                    return transient_power + transition_penalty
 
         else:
             for st in cnt_sm:
