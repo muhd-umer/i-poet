@@ -78,13 +78,13 @@ python train.py [-h]
                 [--agent {DQN, PPO, both}]
 ```
 
-## Power Consumption Analysis
+## Power Consumption _(Analysis)_
 
 The following figure shows the power consumption of the IoTNode for different agents and baselines:
 
-<!-- block diagram centered : figs/power_consumption.png -->
+<!-- block diagram centered : resources/power_consumption.png -->
 <p align="center">
-  <img src="figs/power_comparison.png" alt="Power Consumption" width="60%"/>
+  <img src="resources/power_comparison.png" alt="Power Consumption" width="50%"/>
 </p>
 
 As shown, the RL agents (`DQN` and `PPO`) achieve lower RMS power values compared to the baselines, indicating better power optimization. The `AlwaysActive` baseline consumes the most power, as the IoTNode is always active, while the `Threshold-based` and `PeriodicSleep` baselines show intermediate power consumption. The `RandomAct` baseline exhibits high variance in power consumption due to its random nature.
