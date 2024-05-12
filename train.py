@@ -150,6 +150,7 @@ def plot_results(
     episode_duration=None,
 ):
     """Generate result plots."""
+    os.makedirs("figs", exist_ok=True)
 
     # FIGURE 1 - Power Consumption Comparison
     plt.figure(1)
