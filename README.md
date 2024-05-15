@@ -30,6 +30,7 @@ iot-power-optim/
 │   ├── controller.py   # Controller class
 │   ├── environment.py    # Environment class
 │   └── node.py   # IoTNode class
+├── report/   # Project report (.tex and .pdf files)
 ├── figs/
 ├── logs/   # Training logs and model checkpoints
 ├── resources/
